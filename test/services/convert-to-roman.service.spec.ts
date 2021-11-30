@@ -159,5 +159,19 @@ describe('Convert to Number service', () =>{
       });
     });
 
+    context('when "-6" provided', () => {
+      const value = '-6';
+      test('then return "ERROR - number must be positive"', async () => {
+        expect(await service.answer(value)).toEqual('ERROR - number must be positive');
+      });
+    });
+
+    context('when "0" provided', () => {
+      const value = '0';
+      test('then return "nulla"', async () => {
+        expect(await service.answer(value)).toEqual('nulla');
+      });
+    });
+
   });
 });

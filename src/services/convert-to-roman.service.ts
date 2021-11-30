@@ -64,6 +64,14 @@ export class ConvertToRomanService implements ConvertToRomanApi {
       return 'ERROR - number must be < 4000';
     }
 
+    if (num < 0) {
+      return 'ERROR - number must be positive';
+    }
+
+    if (num == 0) {
+      return 'nulla';
+    }
+
     // separate out numbers from value
     let ones = parseInt(value.slice(value.length - 1));
     let tens = 0;
