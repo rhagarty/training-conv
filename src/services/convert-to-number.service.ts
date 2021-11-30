@@ -1,7 +1,6 @@
 import {ConvertToNumberApi} from './convert-to-number.api';
 import {Inject} from 'typescript-ioc';
 import {LoggerApi} from '../logger';
-import { totalmem } from 'os';
 
 export class ConvertToNumberService implements ConvertToNumberApi {
   logger: LoggerApi;
@@ -51,7 +50,7 @@ export class ConvertToNumberService implements ConvertToNumberApi {
     } else {
       return 0;
     }
-  }
+  };
 
   // convert roman numeral value to number
   async answer(value: string = null): Promise<string> {
@@ -95,10 +94,7 @@ export class ConvertToNumberService implements ConvertToNumberApi {
       idx++;
     }
 
-    if (subtotal) {
-      total = total + subtotal;
-    }
-
+    total = total + subtotal;
     return total.toString(); 
   }
 }

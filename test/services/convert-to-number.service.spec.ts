@@ -40,6 +40,13 @@ describe('Convert to Number service', () =>{
       });
     });
 
+    context('when "IV" provided', () => {
+      const value = 'IV';
+      test('then return "4"', async () => {
+        expect(await service.answer(value)).toEqual('4');
+      });
+    });
+
     context('when "V" provided', () => {
       const value = 'V';
       test('then return "5"', async () => {
