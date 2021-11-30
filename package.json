@@ -1,8 +1,8 @@
 {
-  "name": "template-node-typescript",
+  "name": "training-rhagarty-conv",
   "version": "1.0.0",
   "org": "my-org",
-  "description": "Code pattern for starting a typescript-based microservice",
+  "description": "nodejs microservice",
   "main": "index.js",
   "config": {
     "protocol": "http",
@@ -79,6 +79,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ibm-garage-cloud/template-node-typescript.git"
+    "url": "https://https://github.com/rhagarty/training-conv.git"
   }
 }
