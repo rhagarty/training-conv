@@ -102,7 +102,7 @@ export class ConvertToNumberService implements ConvertToNumberApi {
 
     let val = value.toUpperCase();
     let total = 0;      // running total
-    let subtotal = 0;   // adds number of used to add up parts
+    let subtotal = 0;   // keeps track of adds/subtracts from major denominations
 
     let idx = 0;
     while (idx < val.length) {

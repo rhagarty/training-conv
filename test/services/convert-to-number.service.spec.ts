@@ -51,6 +51,12 @@ describe('Convert to Number service', () =>{
       });
     });
 
+    context('when no value provided', () => {
+      test('then return "ERROR - blank param"', async () => {
+        expect(await service.answer()).toEqual('ERROR - blank param');
+      });
+    });
+
     context('when "MXCXI" provided', () => {
       const value = 'MXCXI';
       test('then return "ERROR - invalid roman numeral"', async () => {
@@ -58,9 +64,10 @@ describe('Convert to Number service', () =>{
       });
     });
 
-    context('when no value provided', () => {
-      test('then return "ERROR - blank param"', async () => {
-        expect(await service.answer()).toEqual('ERROR - blank param');
+    context('when "ABGG" provided', () => {
+      const value = 'ABGG';
+      test('then return "ERROR - invalid roman numeral"', async () => {
+        expect(await service.answer(value)).toEqual('ERROR - invalid roman numeral');
       });
     });
 
