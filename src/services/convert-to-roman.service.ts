@@ -2,9 +2,17 @@ import {ConvertToRomanApi} from './convert-to-roman.api';
 import {Inject} from 'typescript-ioc';
 import {LoggerApi} from '../logger';
 
+class ValidCheckResult {
+  isValid:boolean;
+  errorString:string
+  constructor(valid: boolean, error:string) {
+    this.isValid = valid;
+    this.errorString = error;
+  }
+}
+
 export class ConvertToRomanService implements ConvertToRomanApi {
   logger: LoggerApi;
-
   constructor(
     @Inject
     logger: LoggerApi,
@@ -12,26 +20,11 @@ export class ConvertToRomanService implements ConvertToRomanApi {
     this.logger = logger.child('ConvertToRomanService');
   }
 
-  // check if num1 > num2
-  async greaterThan(num1:string, num2:string): Promise<boolean> {
-    if (num1 === 'M') {
-      return true;
-    } else if (num1 === 'D' && num2 != 'M') {
-      return true;
-    } else if (num1 === 'C' && (num2 === 'L' || num2 === 'X' || num2 === 'V' || num2 === 'I')) {
-      return true;
-    } else if (num1 === 'L' && (num2 === 'X' || num2 === 'V' || num2 === 'I')) {
-      return true;
-    } else if (num1 === 'X' && (num2 === 'V' || num2 === 'I')) {
-      return true;
-    } else if (num1 === 'V' && num2 === 'I') {
-      return true;
-    }
-
-    return false;
-  };
-
-  // generate string of repeating roman numerals
+  /**
+   * Generate string of repeating roman numerals
+   * @param char 
+   * @param count 
+   */
   async repeatChar(char:string, count:number): Promise<string> {
     let value = '';
     for (let i = 0; i < count; i++) {
@@ -40,93 +33,129 @@ export class ConvertToRomanService implements ConvertToRomanApi {
     return value;
   };
 
-  // generate string that reduces the roman numeral
+  /**
+   * Generate string that reduces the roman numeral
+   * @param baseChar 
+   * @param lowerChar 
+   * @param count 
+   */
   async reduceNumber(baseChar:string, lowerChar:string, count:number): Promise<string> {
     let repeatChars = (await this.repeatChar(lowerChar, count));
     return repeatChars + baseChar;
   };
 
-  // generate string that increases the roman numeral
+  /**
+   * Generate string that increases the roman numeral
+   * @param baseChar 
+   * @param higherChar 
+   * @param count 
+   */
   async increaseNumber(baseChar:string, higherChar:string, count:number): Promise<string> {
     let repeatChars = (await this.repeatChar(higherChar, count));
     return baseChar + repeatChars;
   };
 
-  // convert roman numeral value to number
-  async answer(value: string = null): Promise<string> {
-    this.logger.info(`Generating Roman numeral from number ${value}`);
-    if (!value ) {
-      return 'ERROR - blank param';
+  /**
+   * Parse out each denomination from the number we are trying to convert
+   * @param value
+   * @param index 
+   */
+  async parseOutDenomination(value:string, index:number): Promise<number> {
+    let result = 0;
+    
+    if (value.length >= index) {
+      result = parseInt(value.slice(value.length - index, value.length - (index - 1)));
+    }
+
+    return result;
+  }
+      
+  /**
+   * Convert the single denomination value to its roman numeral equivalent
+   * @param denomination 
+   * @param baseRoman 
+   * @param higherRoman 
+   * @param highestRoman 
+   */
+  async convertDenomination(denomination:number, baseRoman:string, higherRoman:string, highestRoman: string): Promise<string> {
+    let result = '';
+    if (denomination) {
+      if (denomination <= 3) {
+        // simply repeat the baseRoman char up to 3 times
+        result = (await this.repeatChar(baseRoman, denomination));
+      } else if (denomination <= 5) {
+        // jump to next roman char and reduce
+        result = (await this.reduceNumber(higherRoman, baseRoman, (5 - denomination)));
+      } else if (denomination <= 8) {
+        // jump to next roman char and increase
+        result = (await this.increaseNumber(higherRoman, baseRoman, (denomination - 5)));
+      } else {
+        // jump 2 levels up and reduce
+        result = (await this.reduceNumber(highestRoman, baseRoman, (10 - denomination)));
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Ensure the passed number to convert is valid
+   * @param value 
+   */
+  async isValid(value:string): Promise<ValidCheckResult> {
+    let result = new ValidCheckResult(true, '');
+
+    if (!value) {
+      result.isValid = false;
+      result.errorString = 'ERROR - blank param';
     }
 
     let num = parseInt(value);
+
     if (num > 3999) {
-      return 'ERROR - number must be < 4000';
+      result.isValid = false;
+      result.errorString = 'ERROR - number must be < 4000';
     }
 
     if (num < 0) {
-      return 'ERROR - number must be positive';
+      result.isValid = false;
+      result.errorString = 'ERROR - number must be positive';
     }
+    
+    return result;
+  }
 
+  /**
+   * Convert number value to roman numeral
+   * @param value 
+   */
+  async answer(value: string = null): Promise<string> {
+    this.logger.info(`Generating Roman numeral from number ${value}`);
+    
+    // first check if we have a valid number
+    let validCheckResult = await this.isValid(value);
+    if (!validCheckResult.isValid) {
+      return validCheckResult.errorString;
+    }
+    
+    // or is a special case
+    let num = parseInt(value);
     if (num == 0) {
       return 'nulla';
     }
 
-    // separate out numbers from value
-    let ones = parseInt(value.slice(value.length - 1));
-    let tens = 0;
-    let hundreds = 0;
-    let thousands = 0;
-
-    if (value.length > 1) {
-      tens = parseInt(value.slice(value.length - 2, value.length - 1));
-    }
-    if (value.length > 2) {
-      hundreds  = parseInt(value.slice(value.length - 3, value.length - 2));
-    }
-    if (value.length > 3) {
-      thousands  = parseInt(value.slice(value.length - 4, value.length - 3));
-    }
+    // parse out denominations from the value
+    let ones = await this.parseOutDenomination(value, 1);
+    let tens = await this.parseOutDenomination(value, 2);
+    let hundreds = await this.parseOutDenomination(value, 3);
+    let thousands = await this.parseOutDenomination(value, 4);
 
     let result = '';
 
-    if (ones <= 3) {
-      result = (await this.repeatChar('I', ones));
-    } else if (ones <= 5) {
-      result = (await this.reduceNumber('V', 'I', (5 - ones)));
-    } else if (ones <= 8) {
-      result = (await this.increaseNumber('V', 'I', (ones - 5)));
-    } else {
-      result = (await this.reduceNumber('X', 'I', (10 - ones)));
-    }
-
-    if (tens > 0) {
-      if (tens <= 3) {
-        result = (await this.repeatChar('X', tens)).concat(result);
-      } else if (tens <= 5) {
-        result = (await this.reduceNumber('L', 'X', (5 - tens))).concat(result);
-      } else if (tens <= 8) {
-        result = (await this.increaseNumber('L', 'X', (tens - 5))).concat(result);
-      } else {
-        result = (await this.reduceNumber('L', 'C', (10 - tens))).concat(result);
-      }  
-    }
-
-    if (hundreds > 0) {
-      if (hundreds <= 3) {
-        result = (await this.repeatChar('C', hundreds)).concat(result);
-      } else if (hundreds <= 5) {
-        result = (await this.reduceNumber('D', 'C', (5 - hundreds))).concat(result);
-      } else if (hundreds <= 8) {
-        result = (await this.increaseNumber('D', 'C', (hundreds - 5))).concat(result);
-      } else {
-        result = (await this.reduceNumber('M', 'C', (10 - hundreds))).concat(result);
-      }
-    }
-        
-    if (thousands > 0) {
-      result = (await this.repeatChar('M', thousands)).concat(result);
-    }
+    // convert each denomination to a number
+    result = await this.convertDenomination(ones, 'I', 'V', 'X');
+    result = (await this.convertDenomination(tens, 'X', 'L', 'C')).concat(result);
+    result = (await this.convertDenomination(hundreds, 'C', 'D', 'M')).concat(result);
+    result = (await this.convertDenomination(thousands, 'M', '', '')).concat(result);
 
     return result;
   };
