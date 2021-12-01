@@ -18,88 +18,43 @@ describe('Convert to Number service', () =>{
     expect(service).not.toBeUndefined();
   });
 
+  let cases = [
+    ['III', '3'],
+    ['IV', '4'],
+    ['VIII', '8'],
+    ['IX', '9'],
+    ['X', '10'],
+    ['XIII', '13'],
+    ['XIX', '19'],
+    ['XXIV', '24'],
+    ['XXVIII', '28'],
+    ['XXXIII', '33'],
+    ['L', '50'],
+    ['LXXVIII', '78'],
+    ['xcix', '99'],
+    ['C', '100'],
+    ['CLXVII', '167'],
+    ['DCXXIII', '623'],
+    ['M', '1000'],
+    ['MXLI', '1041'],
+    ['MMMCCLXXIV', '3274'],
+    ['MMMCMXCIX', '3999']
+  ];
+
   describe('Given answer()', () => {
-    context('when "I" provided', () => {
-      const value = 'I';
-      test('then return "1"', async () => {
-        expect(await service.answer(value)).toEqual('1');
+    cases.forEach(element => {
+      context('when ' + element[0] + ' provided', () => {
+        const value = element[0];
+        test('then return ' + element[1], async () => {
+          expect(await service.answer(value)).toEqual(element[1]);
+        });
       });
     });
 
-    context('when "II" provided', () => {
-      const value = 'II';
-      test('then return "2"', async () => {
-        expect(await service.answer(value)).toEqual('2');
-      });
-    });
-
-    context('when "III" provided', () => {
-      const value = 'III';
-      test('then return "3"', async () => {
-        expect(await service.answer(value)).toEqual('3');
-      });
-    });
-
-    context('when "IV" provided', () => {
-      const value = 'IV';
-      test('then return "4"', async () => {
-        expect(await service.answer(value)).toEqual('4');
-      });
-    });
-
-    context('when "V" provided', () => {
-      const value = 'V';
-      test('then return "5"', async () => {
-        expect(await service.answer(value)).toEqual('5');
-      });
-    });
-
-    context('when "X" provided', () => {
-      const value = 'X';
-      test('then return "10"', async () => {
-        expect(await service.answer(value)).toEqual('10');
-      });
-    });
-
-    context('when "IX" provided', () => {
-      const value = 'IX';
-      test('then return "9"', async () => {
-        expect(await service.answer(value)).toEqual('9');
-      });
-    });
-
-    context('when "IIX" provided', () => {
-      const value = 'IIX';
-      test('then return "8"', async () => {
-        expect(await service.answer(value)).toEqual('8');
-      });
-    });
-
-    context('when "VIII" provided', () => {
-      const value = 'VIII';
-      test('then return "8"', async () => {
-        expect(await service.answer(value)).toEqual('8');
-      });
-    });
-
-    context('when "CD" provided', () => {
-      const value = 'CD';
-      test('then return "400"', async () => {
-        expect(await service.answer(value)).toEqual('400');
-      });
-    });
-
-    context('when "XXL" provided', () => {
-      const value = 'XXL';
-      test('then return "30"', async () => {
-        expect(await service.answer(value)).toEqual('30');
-      });
-    });
-
-    context('when "MMMCMXCIX" provided', () => {
-      const value = 'MMMCMXCIX';
-      test('then return "3999"', async () => {
-        expect(await service.answer(value)).toEqual('3999');
+    context('when "MXCXI" provided', () => {
+      const value = 'MXCXI';
+      test('then return "ERROR - invalid roman numeral"', async () => {
+        expect(await service.answer(value)).toEqual('ERROR - invalid roman numeral');
       });
     });
 
