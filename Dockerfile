@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/nodejs-14:1-43 AS builder
+FROM registry.access.redhat.com/ubi8/nodejs-14:1-51 AS builder
 
 WORKDIR /opt/app-root/src
 
