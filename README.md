@@ -1,76 +1,48 @@
-<p align="center">
-    <a href="http://kitura.io/">
-        <img src="https://landscape.cncf.io/logos/ibm-member.svg" height="100" alt="IBM Cloud">
-    </a>
-</p>
-
-<p align="center">
-    <a href="https://cloud.ibm.com">
-    <img src="https://img.shields.io/badge/IBM%20Cloud-powered-blue.svg" alt="IBM Cloud">
-    </a>
-    <img src="https://img.shields.io/badge/platform-node-lightgrey.svg?style=flat" alt="platform">
-    <img src="https://img.shields.io/badge/license-Apache2-blue.svg?style=flat" alt="Apache 2">
-</p>
-
 # TypeScript Microservice or Backend for Frontend with Node.js
 
-This Starter Kit Template can be the foundation of a TypeScript Node.js Microservice or Backend for Frontend.
+Built using Cloud Native Starter Kit Template - specifically the template for TypeScript node.js services.
 
+## Service API
 
-## Features
+`https://host/to-roman?value=<number>`
+`https://host/to-number?value=<roman-numeral>`
 
-The starter kit provides the following features:
+For example:
+`https://host/to-roman?value=21`
+`https://host/to-number?value=XVI>`
 
-- Built with [TypeScript](https://www.typescriptlang.org/)
-- REST services using `typescript-rest` decorators
-- Swagger documentation using `typescript-rest-swagger`
-- Dependency injection using `typescript-ioc` decorators
-- Logging using `bunyan`
-- TDD environment with [Jest](https://jestjs.io/)
-- Pact testing [Pact](https://docs.pact.io/)
-- Jenkins DevOps pipeline that support OpenShift or IKS deployment
+## Key files
 
-#### Native Application Development
+I divided my service into 2 classes:
 
-Install the latest [Node.js](https://nodejs.org/en/download/) 6+ LTS version.
+* `ConvertToNumberService`
+* `ConvertToRomanService`
 
-After you have created a new git repo from this git template, remember to rename the project.
-Edit `package.json` and change the default name to the name you used to create the template.
+Which are represented in the following files:
 
-Once the Node toolchain has been installed, you can download the project dependencies with:
+`/src/controllers`
 
-```bash
-npm install
-npm run build
-npm run start
-```
+* `calculator-to-number-controller.ts`
+* `calculator-to-roman-controller.ts`
 
-### Deploying 
+`/src/services`
 
-Make sure you are logged into the IBM Cloud using the IBM Cloud CLI and have access 
-to your development cluster.
+* `calculator-to-number-service.ts`
+* `calculator-to-roman-service.ts`
 
-```$bash
-npm i -g @ibmgaragecloud/cloud-native-toolkit-cli
-ibmcloud login -a cloud.ibm.com -r <region> -g <resource group>
-ibmcloud ks cluster-config --cluster <cluster-name>
-kubectl get pods
+## Jest unit tests
 
-```
+Tests are all located in:
 
-Use the IBM Garage for Cloud CLI to register the GIT Repo with Jenkins environment 
-```$bash
-oc sync <project> --dev
-oc pipeline 
-```
+* `/test/controllers`
+* `/test/services`
 
-## More Details
+## GitHub repos and OpenShift projects
 
-For more details on how to use this Starter Kit Template please review the [IBM Garage for Cloud Developer Tools Developer Guide](https://cloudnativetoolkit.dev/)
-
-## Next Steps
-
-* Learn more about augmenting your Node.js applications on IBM Cloud with the [Node Programming Guide](https://cloud.ibm.com/docs/node?topic=nodejs-getting-started).
+* Conversion service - https://github.com/rhagarty/training-conv
+* Conversion service project - `training-rhagarty-conv`
+* Calculator service - https://github.com/rhagarty/training-calc
+* Calculator service project - `training-rhagarty-calc`
 
 ## License
 
